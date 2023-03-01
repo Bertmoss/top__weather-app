@@ -3,7 +3,7 @@ const path = require("path");
 
 module.exports = {
   mode: "development",
-  "entry": "index.js",
+  "entry": "/src/index.js",
   "output": {
     filename: "main.js",
     path: path.resolve(__dirname, "dist")
@@ -23,11 +23,11 @@ module.exports = {
               implementation: require("sass"),
             },
           },
-          {
-            test: /\.(png|svg|jpg|jpeg|gif)$/i,
-            type: 'asset/resource',
-          },
         ],
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
       },
       {
         test: /\.m?js$/,
