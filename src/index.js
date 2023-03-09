@@ -62,16 +62,14 @@ async function fetchLatLon(queryObj) {
   }
 }
 
-function destructureLatLon(queryObj, response) { // issue here
-  console.log(response[0])
-  const {lat, lon} = response[0];
-  
-  queryObj.latitude = lat;
-  queryObj.longitude = lon;
+function destructureLatLon(queryObj, response) {
+  queryObj.latitude = response[0].lat;
+  queryObj.longitude = response[0].lon;
 }
 
-function getLatLon(queryObj) {
-  let response = fetchLatLon(queryObj);
+
+async function getLatLon(queryObj) {
+  let response = await fetchLatLon(queryObj);
   destructureLatLon(queryObj, response);
 
   //fetchLatLon(queryObj).then(response => {destructureLatLon(queryObj, response)});
@@ -96,7 +94,7 @@ async function fetchWeather(queryObj) {
 
 
 async function checkWeather() {
-  getLatLon(london);
+  await getLatLon(london);
  
   fetchWeather(london);
   console.log("waiting on weather data")
@@ -109,14 +107,4 @@ checkWeather();
 
 
 
-
-
-fetch (UserQuery.getGeoCodeUrl(london), {"mode": "cors"})
-.then((result)=> result.json())
-.then((data) => {
-  console.log(data[0].lat)
-  london.latitude = data[0].lat;
-  london.longitude = data[0].lon;
-  console.log(UserQuery.getWeatherUrl(london));
-});
 
