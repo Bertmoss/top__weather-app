@@ -1,6 +1,4 @@
 // eslint-disable-next-line max-classes-per-file
-
-// eslint-disable-next-line max-classes-per-file
 class ApiUrls {
 
   static geoCodeStart = "http://api.openweathermap.org/geo/1.0/direct?";
@@ -20,7 +18,7 @@ class ApiUrls {
   }
 }
 
-
+// information holder
 class UserQuery extends ApiUrls {
 
   constructor(location) {
@@ -49,58 +47,46 @@ class UserQuery extends ApiUrls {
   }
 
 }
-const london = new UserQuery("LONDON");
+const london = new UserQuery("London");
 
-async function fetchLatLon(queryObj) {
-  try {
-    let response = await fetch (UserQuery.getGeoCodeUrl(queryObj), {"mode": "cors"});
-    response = await response.json();
-    return response;
+const tokyo = new UserQuery("warsaw");
 
-  } catch {
-    return console.log("error")
+// service provider
+const api = {
+  weatherError: "Something went wrong",
+  locationError: "Unable to find this location",
+  async _setLatLoN(queryObj) {
+    try {
+      let response = await fetch (UserQuery.getGeoCodeUrl(queryObj), {"mode": "cors"});
+      response = await response.json();
+      queryObj.latitude = response[0].lat;
+      queryObj.longitude = response[0].lon;
+    } catch {
+      return this.locationError;
+    }
+  },
+  async fetchWeather(queryObj) {
+    try {
+      let obj = await this._setLatLoN(queryObj);
+      if (obj !== this.locationError) {
+        let response = await fetch (UserQuery.getWeatherUrl(queryObj), {"mode": "cors"});
+        let data = await response.json();
+        console.log(data)
+      } else {
+        console.log(this.locationError)
+      }
+    } catch {
+      console.log(this.weatherError)
+    }
   }
 }
 
-function destructureLatLon(queryObj, response) {
-  queryObj.latitude = response[0].lat;
-  queryObj.longitude = response[0].lon;
-}
-
-
-async function getLatLon(queryObj) {
-  let response = await fetchLatLon(queryObj);
-  destructureLatLon(queryObj, response);
-
-  //fetchLatLon(queryObj).then(response => {destructureLatLon(queryObj, response)});
-  console.log(queryObj)
-}
-
-
-
-async function fetchWeather(queryObj) {
-  try {
-    let response = await fetch (UserQuery.getWeatherUrl(queryObj), {"mode": "cors"});
-    response = await response.json();
-    console.log(response)
-    return response;
-
-  } catch{
-    return console.log("error weather");
-  }
-}
-
-
-
-
-async function checkWeather() {
-  await getLatLon(london);
- 
-  fetchWeather(london);
-  console.log("waiting on weather data")
-
+  function checkWeather() {
+    api.fetchWeather(london);
+    console.log("waiting on weather")
 }
 checkWeather();
+
 
 
 
